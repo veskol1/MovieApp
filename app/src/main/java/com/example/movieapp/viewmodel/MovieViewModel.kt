@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.movieapp.model.Movie
 import com.example.movieapp.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,25 +24,27 @@ class MovieViewModel @Inject constructor(
     var uiState = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            val movies = repository.fetchUpcomingMovies()
+        getMovies()
+    }
 
-            if (movies.isNotEmpty()) {
+    private fun getMovies(resetData: Boolean = false) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val moviesList = repository.fetchMovies(filterType = uiState.value.filterType, resetData = resetData)
+
+            if (moviesList.isNotEmpty()) {
                 _uiState.update {
                     it.copy(
                         status = Status.SUCCESS,
-                        moviesList = movies
+                        moviesList = moviesList
                     )
                 }
             } else {
                 _uiState.value = MoviesUiState(status = Status.ERROR)
             }
-
         }
     }
 
     fun loadMore() {
-
         _uiState.update {
             it.copy(
                 page = it.page + 1,
@@ -49,9 +52,12 @@ class MovieViewModel @Inject constructor(
             )
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             delay(1000L) //todo remove this
-            val newMoviesList = repository.fetchUpcomingMovies(uiState.value.page)
+            val newMoviesList = repository.fetchMovies(
+                filterType = uiState.value.filterType,
+                page = uiState.value.page,
+            )
 
             _uiState.update {
                 it.copy(
@@ -63,17 +69,36 @@ class MovieViewModel @Inject constructor(
         }
     }
 
+    fun onFilterChanged(filterType: FilterType) {
+        _uiState.update {
+            it.copy(
+                status = Status.LOADING,
+                page = 1,
+                filterType = filterType,
+                moviesList = emptyList()
+            )
+        }
+
+        getMovies(resetData = true)
+    }
 }
 
 data class MoviesUiState(
     val status: Status = Status.LOADING,
     var page: Int = 1,
     val moviesList: List<Movie> = emptyList(),
-    val isLoadingMore: Boolean = false
+    val isLoadingMore: Boolean = false,
+    val filterType: FilterType = FilterType.UPCOMING
 )
 
 enum class Status {
     LOADING,
     SUCCESS,
     ERROR
+}
+
+enum class FilterType {
+    UPCOMING,
+    TOP_RATED,
+    NOW_PLAYING
 }

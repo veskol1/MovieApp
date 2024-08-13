@@ -1,7 +1,6 @@
 package com.example.movieapp.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -23,7 +22,7 @@ internal fun <T> EndlessLazyVerticalGrid(
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp),
     horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(8.dp),
     columns: GridCells = GridCells.Fixed(3),
-    contentPadding: PaddingValues = PaddingValues(16.dp),
+    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
     loading: Boolean = false,
     listState: LazyGridState = rememberLazyGridState(),
     items: List<T>,
