@@ -9,15 +9,18 @@ class MovieRepository @Inject constructor(
     private val api: ApiService
 ) {
 
-    suspend fun fetchUpcomingMovies(): List<Movie> {
-        val response = api.getUpcomingMovies(apiKey = API_KEY, page = 1)
+    private var moviesList: MutableList<Movie> = arrayListOf()
+
+    suspend fun fetchUpcomingMovies(page: Int = 1): List<Movie> {
+        val response = api.getUpcomingMovies(apiKey = API_KEY, page = page)
 
         if (response.isSuccessful && response.body() != null) {
-            return response.body()?.results ?: emptyList()
+            val fetchMoviesList = (response.body()?.results ?: arrayListOf()).toMutableList()
+            moviesList.addAll(fetchMoviesList)
+            return moviesList
         }
 
         return emptyList()
     }
-
 
 }

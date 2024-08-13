@@ -1,14 +1,17 @@
 package com.example.movieapp.model
 
+import androidx.compose.runtime.Stable
 import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
+@Stable
 data class MovieResponse(
     val results: List<Movie>
 )
 
-
+@Stable
 data class Movie(
-    val id: String = "",
+    val idUnique: String = UUID.randomUUID().toString(),
 
     @SerializedName("original_title")
     val title: String = "",
