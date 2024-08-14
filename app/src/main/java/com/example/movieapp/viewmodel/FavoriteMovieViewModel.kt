@@ -28,7 +28,7 @@ class FavoriteMovieViewModel @Inject constructor(
     fun removeFavoriteMovie(movieId: String) {
         val movie = findSavedMovie(movieId = movieId)
         viewModelScope.launch(Dispatchers.IO) {
-            localRepository.deleteMovieToDb(movie)
+            localRepository.deleteMovieFromDb(movie)
             updateFavoriteMoviesState()
         }
     }

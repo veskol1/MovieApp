@@ -7,9 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.movieapp.navigation.BottomNavigation
 import com.example.movieapp.navigation.NavigationGraph
@@ -30,7 +28,10 @@ class MainActivity : ComponentActivity() {
                     bottomBar = {
                         BottomNavigation(navController = navController)
                     }) { innerPadding ->
-                    NavigationGraph(modifier = Modifier.padding(innerPadding), navController = navController)
+                    NavigationGraph(
+                        modifier = Modifier.padding(innerPadding),
+                        navController = navController
+                    )
                 }
             }
         }

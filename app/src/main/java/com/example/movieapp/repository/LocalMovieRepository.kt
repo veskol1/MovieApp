@@ -14,7 +14,7 @@ class LocalMovieRepository @Inject constructor(private val movieDao: MovieDao) {
         movieDao.insert(movie = movie)
     }
 
-    fun deleteMovieToDb(movie: Movie) {
+    fun deleteMovieFromDb(movie: Movie) {
         movieDao.delete(movie = movie)
     }
 

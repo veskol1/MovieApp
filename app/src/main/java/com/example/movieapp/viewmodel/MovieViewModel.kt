@@ -104,7 +104,7 @@ class MovieViewModel @Inject constructor(
         val movie = movieUiState.value.movie
         viewModelScope.launch(Dispatchers.IO) {
             if (movieUiState.value.isFavorite) {
-                localRepository.deleteMovieToDb(movie)
+                localRepository.deleteMovieFromDb(movie)
             } else {
                 localRepository.insertMovieToDb(movie)
             }
@@ -116,7 +116,6 @@ class MovieViewModel @Inject constructor(
             }
         }
     }
-
 }
 
 data class MoviesUiState(
