@@ -1,7 +1,6 @@
 package com.example.movieapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,7 +10,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.movieapp.components.MainScreen
+import androidx.navigation.compose.rememberNavController
+import com.example.movieapp.navigation.BottomNavigation
+import com.example.movieapp.navigation.NavigationGraph
 import com.example.movieapp.ui.theme.MovieAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,21 +25,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MovieAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreen(modifier = Modifier.padding(innerPadding))
+                val navController = rememberNavController()
+                Scaffold(modifier = Modifier.fillMaxSize(),
+                    bottomBar = {
+                        BottomNavigation(navController = navController)
+                    }) { innerPadding ->
+                    NavigationGraph(modifier = Modifier.padding(innerPadding), navController = navController)
                 }
             }
         }
     }
 }
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MovieAppTheme {
-        //Greeting("Android")
-    }
-}
-
 

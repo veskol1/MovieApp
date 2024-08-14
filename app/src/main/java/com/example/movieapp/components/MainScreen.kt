@@ -17,7 +17,11 @@ import com.example.movieapp.viewmodel.MovieViewModel
 import com.example.movieapp.viewmodel.Status
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, movieViewModel: MovieViewModel = viewModel()) {
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    movieViewModel: MovieViewModel = viewModel(),
+    navigateOnCardClick: (movieId: String) -> Unit = {}
+) {
     val uiState by movieViewModel.uiState.collectAsState()
 
     when (uiState.status) {
@@ -34,8 +38,10 @@ fun MainScreen(modifier: Modifier = Modifier, movieViewModel: MovieViewModel = v
                     EndlessLazyVerticalGrid(
                         loading = uiState.isLoadingMore,
                         items = uiState.moviesList,
-                        itemKey = Movie::idUnique,
-                        itemContent = { item: Movie -> CardMovieItem(item = item) },
+                        itemKey = Movie::uniqueId,
+                        itemContent = { item: Movie -> CardMovieItem(item = item, onCardClick = {
+                            navigateOnCardClick(it)
+                        }) },
                         loadingProgressIndicator = { ProgressIndicator(modifier = modifier) },
                         loadMore = { movieViewModel.loadMore() }
                     )
@@ -66,8 +72,8 @@ fun MainScreenPreview() {
             EndlessLazyVerticalGrid(
                 loading = true,
                 items = listOf(Movie(),Movie(),Movie(),Movie(),Movie(),Movie(),Movie()),
-                itemKey = Movie::idUnique,
-                itemContent = { item: Movie -> CardMovieItem(item = item) },
+                itemKey = Movie::uniqueId,
+                itemContent = { item: Movie -> CardMovieItem(item = item, onCardClick = {}) },
                 loadingProgressIndicator = { ProgressIndicator() },
                 loadMore = {  }
             )

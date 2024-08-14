@@ -1,6 +1,5 @@
 package com.example.movieapp.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieapp.model.Movie
@@ -80,6 +79,11 @@ class MovieViewModel @Inject constructor(
         }
 
         getMovies(resetData = true)
+    }
+
+
+    fun findDeal(movieId: String): Movie {
+        return uiState.value.moviesList.find { it.uniqueId == movieId }!!
     }
 }
 

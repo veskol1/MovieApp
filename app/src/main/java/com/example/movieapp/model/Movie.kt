@@ -11,7 +11,7 @@ data class MovieResponse(
 
 @Stable
 data class Movie(
-    val idUnique: String = UUID.randomUUID().toString(),
+    val uniqueId: String = UUID.randomUUID().toString(),
 
     @SerializedName("original_title")
     val title: String = "",
