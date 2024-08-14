@@ -28,8 +28,8 @@ fun MainScreen(
         Status.SUCCESS -> {
             Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
                 DropdownMenu(
-                    selectedFilterText = uiState.filterType.name,
-                    filterOptions = FilterType.entries.map { it.name },
+                    selectedFilterText = uiState.filterType.title,
+                    filterOptions = FilterType.entries,
                     onFilterChange = { filterType ->
                         movieViewModel.onFilterChanged(filterType = filterType)
                     }
@@ -38,7 +38,7 @@ fun MainScreen(
                     EndlessLazyVerticalGrid(
                         loading = uiState.isLoadingMore,
                         items = uiState.moviesList,
-                        itemKey = Movie::uniqueId,
+                        itemKey = Movie::id,
                         itemContent = { item: Movie -> CardMovieItem(movie = item, onCardClick = {
                             navigateOnCardClick(it)
                         }) },
@@ -72,7 +72,7 @@ fun MainScreenPreview() {
             EndlessLazyVerticalGrid(
                 loading = true,
                 items = listOf(Movie(),Movie(),Movie(),Movie(),Movie(),Movie(),Movie()),
-                itemKey = Movie::uniqueId,
+                itemKey = Movie::id,
                 itemContent = { item: Movie -> CardMovieItem(movie = item, onCardClick = {}) },
                 loadingProgressIndicator = { ProgressIndicator() },
                 loadMore = {  }

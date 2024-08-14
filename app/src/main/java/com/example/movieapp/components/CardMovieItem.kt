@@ -16,7 +16,7 @@ import com.example.movieapp.model.Movie
 @Composable
 fun CardMovieItem(movie: Movie, onCardClick: (String) -> Unit) {
     Card(modifier = Modifier.height(180.dp).clipToBounds().clickable {
-        onCardClick(movie.uniqueId)
+        onCardClick(movie.id)
     }) {  //todo add animation on addition
         AsyncImage(
             modifier = Modifier.fillMaxSize(),

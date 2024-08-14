@@ -24,8 +24,8 @@ sealed class BottomBar(
     )
 
     data object Favorites: BottomBar(
-        route = "liked",
-        name = "Liked",
+        route = "favorites",
+        name = "Favorites",
         icon = Icons.Outlined.FavoriteBorder,
         selectedIcon = Icons.Filled.Favorite
     )

@@ -12,14 +12,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.movieapp.viewmodel.FilterType
+import kotlin.enums.EnumEntries
 
 @Composable
 fun DropdownMenu(
     modifier: Modifier = Modifier,
     selectedFilterText: String,
-    filterOptions: List<String>,
+    filterOptions: EnumEntries<FilterType>,
     onFilterChange: (FilterType) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -27,20 +33,23 @@ fun DropdownMenu(
     Row(modifier = modifier
         .wrapContentSize()
         .padding(vertical = 16.dp)) {
-        Text(
-            text = "Sort by $selectedFilterText",
-            modifier = Modifier.clickable { expanded = true }
-        )
+        Text(text = buildAnnotatedString {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
+                append("Sort by ")
+            }
+            append(selectedFilterText)
+        }, modifier = Modifier.clickable { expanded = true })
+
         androidx.compose.material3.DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            filterOptions.forEach { filterText ->
+            filterOptions.forEach { filterType ->
                 DropdownMenuItem(
-                    text = { Text(text = filterText) },
+                    text = { Text(text = filterType.title) },
                     onClick = {
                         expanded = false
-                        onFilterChange(FilterType.valueOf(filterText))
+                        onFilterChange(filterType)
                     }
                 )
             }

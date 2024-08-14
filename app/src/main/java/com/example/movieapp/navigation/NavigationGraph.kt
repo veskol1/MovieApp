@@ -35,11 +35,16 @@ fun NavigationGraph(
         }
 
         composable(route = BottomBar.Favorites.route) {
+            movieViewModel.updateFavoriteMoviesState()
             FavoritesScreen(
                 modifier = modifier,
                 movieViewModel = movieViewModel,
                 navigateOnCardClick = { movieId ->
-                    navController.navigate("movie/$movieId")
+                    movieViewModel.initMovieScreenUi(movieId)
+                    navController.navigate("movie")
+                },
+                removeFavoriteClick = { movieId ->
+                    movieViewModel.removeFavoriteMovie(movieId)
                 }
             )
         }

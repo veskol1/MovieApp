@@ -15,7 +15,7 @@ data class MovieResponse(
 @Entity(tableName = "favorite_movies_table")
 data class Movie(
     @PrimaryKey
-    val uniqueId: String = UUID.randomUUID().toString(),
+    val id: String = "",
 
     @SerializedName("original_title")
     val title: String = "",

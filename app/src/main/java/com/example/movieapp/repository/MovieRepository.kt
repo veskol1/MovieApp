@@ -35,7 +35,7 @@ class MovieRepository @Inject constructor(
             if (response.isSuccessful && response.body() != null) {
                 val fetchMoviesList = (response.body()?.results ?: arrayListOf()).toMutableList()
                 moviesList.addAll(fetchMoviesList)
-                return moviesList
+                return moviesList.distinctBy { it.id }
             }
         } catch (e: Exception) {
             return emptyList()
@@ -46,7 +46,7 @@ class MovieRepository @Inject constructor(
 
 
     fun checkIfMovieIsFavorite(movie: Movie): Boolean {
-        return (movieDao.getAll().find { it.uniqueId == movie.uniqueId } != null)
+        return (movieDao.getAll().find { it.id == movie.id } != null)
     }
 
     fun insertMovieToDb(movie: Movie) {
@@ -55,6 +55,10 @@ class MovieRepository @Inject constructor(
 
     fun deleteMovieToDb(movie: Movie) {
         movieDao.delete(movie = movie)
+    }
+
+    fun gelAllFavoriteMovies(): List<Movie> {
+        return movieDao.getAll()
     }
 
 }
