@@ -4,7 +4,6 @@ import androidx.compose.runtime.Stable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import java.util.UUID
 
 @Stable
 data class MovieResponse(

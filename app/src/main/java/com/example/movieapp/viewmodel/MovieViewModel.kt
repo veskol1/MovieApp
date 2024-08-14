@@ -3,6 +3,7 @@ package com.example.movieapp.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieapp.model.Movie
+import com.example.movieapp.repository.LocalMovieRepository
 import com.example.movieapp.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MovieViewModel @Inject constructor(
-    private val repository: MovieRepository
+    private val repository: MovieRepository,
+    private val localRepository: LocalMovieRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MoviesUiState())
@@ -23,9 +25,6 @@ class MovieViewModel @Inject constructor(
 
     private val _movieUiState = MutableStateFlow(MovieUiState())
     var movieUiState = _movieUiState.asStateFlow()
-
-    private val _favoriteMoviesUiState = MutableStateFlow<List<Movie>>(emptyList())
-    var favoriteMoviesUiState = _favoriteMoviesUiState.asStateFlow()
 
     init {
         getRemoteMovies()
@@ -85,14 +84,13 @@ class MovieViewModel @Inject constructor(
         getRemoteMovies(resetData = true)
     }
 
-
     fun initMovieScreenUi(movieId: String) {
         val movie = findMovie(movieId = movieId)
         viewModelScope.launch(Dispatchers.IO) {
             _movieUiState.update {
                 it.copy(
                     movie = movie,
-                    isFavorite = repository.checkIfMovieIsFavorite(movie)
+                    isFavorite = localRepository.checkIfMovieIsFavorite(movie)
                 )
             }
         }
@@ -102,17 +100,13 @@ class MovieViewModel @Inject constructor(
         return uiState.value.moviesList.find { it.id == movieId }!!
     }
 
-    private fun findSavedMovie(movieId: String): Movie {
-        return favoriteMoviesUiState.value.find { it.id == movieId }!!
-    }
-
     fun handleFavoriteClicked() {
         val movie = movieUiState.value.movie
         viewModelScope.launch(Dispatchers.IO) {
             if (movieUiState.value.isFavorite) {
-                repository.deleteMovieToDb(movie)
+                localRepository.deleteMovieToDb(movie)
             } else {
-                repository.insertMovieToDb(movie)
+                localRepository.insertMovieToDb(movie)
             }
 
             _movieUiState.update {
@@ -123,21 +117,6 @@ class MovieViewModel @Inject constructor(
         }
     }
 
-    fun removeFavoriteMovie(movieId: String) {
-        val movie= findSavedMovie(movieId = movieId)
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteMovieToDb(movie)
-            updateFavoriteMoviesState()
-        }
-    }
-
-    fun updateFavoriteMoviesState() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _favoriteMoviesUiState.update {
-                repository.gelAllFavoriteMovies()
-            }
-        }
-    }
 }
 
 data class MoviesUiState(

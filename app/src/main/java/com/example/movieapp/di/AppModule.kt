@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.movieapp.api.ApiService
 import com.example.movieapp.constans.Constants.API_BASE_URL
+import com.example.movieapp.repository.LocalMovieRepository
 import com.example.movieapp.repository.MovieRepository
 import com.example.movieapp.room.MovieDao
 import com.example.movieapp.room.MovieDatabase
@@ -48,8 +49,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun movieRepositoryProvide(movieApiService: ApiService, movieDao: MovieDao): MovieRepository {
-        return MovieRepository(movieApiService, movieDao)
+    fun movieRemoteRepositoryProvide(movieApiService: ApiService): MovieRepository {
+        return MovieRepository(movieApiService)
+    }
+
+    @Provides
+    @Singleton
+    fun movieLocalRepositoryProvide(movieDao: MovieDao): LocalMovieRepository {
+        return LocalMovieRepository(movieDao)
     }
 
 }

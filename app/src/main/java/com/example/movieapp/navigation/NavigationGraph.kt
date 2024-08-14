@@ -10,6 +10,7 @@ import com.example.movieapp.model.BottomBar
 import com.example.movieapp.components.FavoritesScreen
 import com.example.movieapp.components.MainScreen
 import com.example.movieapp.components.MovieScreen
+import com.example.movieapp.viewmodel.FavoriteMovieViewModel
 import com.example.movieapp.viewmodel.MovieViewModel
 
 @Composable
@@ -17,6 +18,7 @@ fun NavigationGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     movieViewModel: MovieViewModel = viewModel(),
+    favoriteMovieViewModel: FavoriteMovieViewModel = viewModel(),
 ) {
     NavHost(
         navController,
@@ -35,16 +37,16 @@ fun NavigationGraph(
         }
 
         composable(route = BottomBar.Favorites.route) {
-            movieViewModel.updateFavoriteMoviesState()
+            favoriteMovieViewModel.updateFavoriteMoviesState()
             FavoritesScreen(
                 modifier = modifier,
-                movieViewModel = movieViewModel,
+                favoriteMovieViewModel = favoriteMovieViewModel,
                 navigateOnCardClick = { movieId ->
                     movieViewModel.initMovieScreenUi(movieId)
                     navController.navigate("movie")
                 },
                 removeFavoriteClick = { movieId ->
-                    movieViewModel.removeFavoriteMovie(movieId)
+                    favoriteMovieViewModel.removeFavoriteMovie(movieId)
                 }
             )
         }

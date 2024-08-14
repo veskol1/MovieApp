@@ -31,17 +31,18 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.movieapp.constans.Constants.BASE_IMAGE_URL_LIST
 import com.example.movieapp.model.Movie
+import com.example.movieapp.viewmodel.FavoriteMovieViewModel
 import com.example.movieapp.viewmodel.MovieViewModel
 
 @Composable
 fun FavoritesScreen(
     modifier: Modifier = Modifier,
-    movieViewModel: MovieViewModel,
+    favoriteMovieViewModel: FavoriteMovieViewModel,
     navigateOnCardClick: (movieId: String) -> Unit = {},
     removeFavoriteClick: (movieId: String) -> Unit = {}
 
 ) {
-    val favoriteMovies by movieViewModel.favoriteMoviesUiState.collectAsState()  //todo fix to lifecycle
+    val favoriteMovies by favoriteMovieViewModel.favoriteMoviesUiState.collectAsState()  //todo fix to lifecycle
 
     Column(
         modifier = modifier
