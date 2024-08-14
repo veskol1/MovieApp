@@ -39,7 +39,7 @@ fun MainScreen(
                         loading = uiState.isLoadingMore,
                         items = uiState.moviesList,
                         itemKey = Movie::uniqueId,
-                        itemContent = { item: Movie -> CardMovieItem(item = item, onCardClick = {
+                        itemContent = { item: Movie -> CardMovieItem(movie = item, onCardClick = {
                             navigateOnCardClick(it)
                         }) },
                         loadingProgressIndicator = { ProgressIndicator(modifier = modifier) },
@@ -73,7 +73,7 @@ fun MainScreenPreview() {
                 loading = true,
                 items = listOf(Movie(),Movie(),Movie(),Movie(),Movie(),Movie(),Movie()),
                 itemKey = Movie::uniqueId,
-                itemContent = { item: Movie -> CardMovieItem(item = item, onCardClick = {}) },
+                itemContent = { item: Movie -> CardMovieItem(movie = item, onCardClick = {}) },
                 loadingProgressIndicator = { ProgressIndicator() },
                 loadMore = {  }
             )

@@ -80,7 +80,8 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     ksp(libs.hilt.compiler)
-//    implementation(libs.dagger.compiler)
+
+    implementation(libs.coil.compose)
 
 }
 

@@ -1,5 +1,6 @@
 package com.example.movieapp.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,7 +47,15 @@ fun NavigationGraph(
 
         composable(route = "movie/{id}") {
             val movieId = it.arguments?.getString("id") ?: ""
-            MovieScreen(modifier = modifier, movie = movieViewModel.findDeal(movieId))
+            MovieScreen(
+                modifier = modifier,
+                movie = movieViewModel.findMovie(movieId),
+                isFavorite = movieViewModel.isFavorite(movieId),
+                onSaveMovieClicked = { id, isFavorite ->
+                    movieViewModel.handleFavoriteClicked(isFavorite = isFavorite, movieId = id)
+                    Log.d("haha","onSaveMovieClicked id $id")
+                    Log.d("haha","isFavorite $isFavorite")
+                })
         }
 
     }

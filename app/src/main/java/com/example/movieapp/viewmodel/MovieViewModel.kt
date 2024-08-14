@@ -82,8 +82,21 @@ class MovieViewModel @Inject constructor(
     }
 
 
-    fun findDeal(movieId: String): Movie {
+    fun findMovie(movieId: String): Movie {
+        //todo check if movie is saved in db or in Datastore?
         return uiState.value.moviesList.find { it.uniqueId == movieId }!!
+    }
+
+    fun isFavorite(movieId: String): Boolean {
+        return false
+    }
+
+    fun handleFavoriteClicked(isFavorite: Boolean, movieId: String) {
+        if (isFavorite) {
+            //todo add movie to db
+        } else {
+            //todo remove movie from db
+        }
     }
 }
 
