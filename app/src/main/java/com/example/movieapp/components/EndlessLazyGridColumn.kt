@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 internal fun <T> EndlessLazyVerticalGrid(
     modifier: Modifier = Modifier,
-    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp),
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(8.dp),
+    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(10.dp),
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(10.dp),
     columns: GridCells = GridCells.Fixed(3),
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
     loading: Boolean = false,

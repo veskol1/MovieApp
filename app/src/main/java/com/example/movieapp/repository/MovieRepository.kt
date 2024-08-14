@@ -3,12 +3,14 @@ package com.example.movieapp.repository
 import com.example.movieapp.api.ApiService
 import com.example.movieapp.constans.Constants.API_KEY
 import com.example.movieapp.model.Movie
+import com.example.movieapp.room.MovieDao
 import com.example.movieapp.viewmodel.FilterType
 import com.example.movieapp.viewmodel.FilterType.*
 import javax.inject.Inject
 
 class MovieRepository @Inject constructor(
-    private val api: ApiService
+    private val api: ApiService,
+    private val movieDao: MovieDao
 ) {
 
     private var moviesList: MutableList<Movie> = arrayListOf()
@@ -40,6 +42,19 @@ class MovieRepository @Inject constructor(
         }
 
         return emptyList()
+    }
+
+
+    fun checkIfMovieIsFavorite(movie: Movie): Boolean {
+        return (movieDao.getAll().find { it.uniqueId == movie.uniqueId } != null)
+    }
+
+    fun insertMovieToDb(movie: Movie) {
+        movieDao.insert(movie = movie)
+    }
+
+    fun deleteMovieToDb(movie: Movie) {
+        movieDao.delete(movie = movie)
     }
 
 }

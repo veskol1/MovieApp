@@ -1,9 +1,7 @@
 package com.example.movieapp.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -28,9 +26,10 @@ fun NavigationGraph(
         composable(route = BottomBar.Movies.route) {
             MainScreen(
                 modifier = modifier,
-                movieViewModel = hiltViewModel<MovieViewModel>(),
+                movieViewModel = movieViewModel,
                 navigateOnCardClick = { movieId ->
-                    navController.navigate("movie/$movieId")
+                    movieViewModel.initMovieScreenUi(movieId)
+                    navController.navigate("movie")
                 },
             )
         }
@@ -38,24 +37,18 @@ fun NavigationGraph(
         composable(route = BottomBar.Favorites.route) {
             FavoritesScreen(
                 modifier = modifier,
-                movieViewModel = hiltViewModel<MovieViewModel>(),
+                movieViewModel = movieViewModel,
                 navigateOnCardClick = { movieId ->
                     navController.navigate("movie/$movieId")
                 }
             )
         }
 
-        composable(route = "movie/{id}") {
-            val movieId = it.arguments?.getString("id") ?: ""
+        composable(route = "movie") {
             MovieScreen(
                 modifier = modifier,
-                movie = movieViewModel.findMovie(movieId),
-                isFavorite = movieViewModel.isFavorite(movieId),
-                onSaveMovieClicked = { id, isFavorite ->
-                    movieViewModel.handleFavoriteClicked(isFavorite = isFavorite, movieId = id)
-                    Log.d("haha","onSaveMovieClicked id $id")
-                    Log.d("haha","isFavorite $isFavorite")
-                })
+                movieViewModel = movieViewModel,
+                onFavoriteMovieClicked = { movieViewModel.handleFavoriteClicked() })
         }
 
     }

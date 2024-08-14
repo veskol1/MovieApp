@@ -1,6 +1,8 @@
 package com.example.movieapp.model
 
 import androidx.compose.runtime.Stable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import java.util.UUID
 
@@ -10,7 +12,9 @@ data class MovieResponse(
 )
 
 @Stable
+@Entity(tableName = "favorite_movies_table")
 data class Movie(
+    @PrimaryKey
     val uniqueId: String = UUID.randomUUID().toString(),
 
     @SerializedName("original_title")

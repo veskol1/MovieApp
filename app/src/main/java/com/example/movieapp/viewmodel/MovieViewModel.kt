@@ -1,5 +1,6 @@
 package com.example.movieapp.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieapp.model.Movie
@@ -21,6 +22,9 @@ class MovieViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(MoviesUiState())
     var uiState = _uiState.asStateFlow()
+
+    private val _movieUiState = MutableStateFlow(MovieUiState())
+    var movieUiState = _movieUiState.asStateFlow()
 
     init {
         getMovies()
@@ -82,20 +86,37 @@ class MovieViewModel @Inject constructor(
     }
 
 
-    fun findMovie(movieId: String): Movie {
-        //todo check if movie is saved in db or in Datastore?
+    fun initMovieScreenUi(movieId: String) {
+        val movie = findMovie(movieId = movieId)
+        viewModelScope.launch(Dispatchers.IO) {
+            _movieUiState.update {
+                it.copy(
+                    movie = movie,
+                    isFavorite = repository.checkIfMovieIsFavorite(movie)
+                )
+            }
+        }
+    }
+
+    private fun findMovie(movieId: String): Movie {
         return uiState.value.moviesList.find { it.uniqueId == movieId }!!
     }
 
-    fun isFavorite(movieId: String): Boolean {
-        return false
-    }
+    fun handleFavoriteClicked() {
+        val movie = movieUiState.value.movie
+        viewModelScope.launch(Dispatchers.IO) {
 
-    fun handleFavoriteClicked(isFavorite: Boolean, movieId: String) {
-        if (isFavorite) {
-            //todo add movie to db
-        } else {
-            //todo remove movie from db
+            if (movieUiState.value.isFavorite) {
+                repository.deleteMovieToDb(movie)
+            } else {
+                repository.insertMovieToDb(movie)
+            }
+
+            _movieUiState.update {
+                it.copy(
+                    isFavorite = !movieUiState.value.isFavorite
+                )
+            }
         }
     }
 }
@@ -107,6 +128,12 @@ data class MoviesUiState(
     val isLoadingMore: Boolean = false,
     val filterType: FilterType = FilterType.UPCOMING
 )
+
+data class MovieUiState(
+    val movie: Movie = Movie(),
+    val isFavorite: Boolean = false
+)
+
 
 enum class Status {
     LOADING,
