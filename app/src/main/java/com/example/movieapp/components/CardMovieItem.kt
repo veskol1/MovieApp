@@ -21,7 +21,7 @@ fun CardMovieItem(movie: Movie, onCardClick: (String) -> Unit) {
         AsyncImage(
             modifier = Modifier.fillMaxSize(),
             model = BASE_IMAGE_URL_LIST + movie.image,
-            contentScale = ContentScale.FillWidth,
+            contentScale = ContentScale.FillBounds,
             contentDescription = null,
         )
     }

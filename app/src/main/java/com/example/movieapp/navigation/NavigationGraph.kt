@@ -1,5 +1,7 @@
 package com.example.movieapp.navigation
 
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -25,7 +27,7 @@ fun NavigationGraph(
         startDestination = BottomBar.Movies.route
     ) {
 
-        composable(route = BottomBar.Movies.route) {
+        composable(route = BottomBar.Movies.route, enterTransition = { scaleIn() }, exitTransition = { scaleOut() }) {
             MainScreen(
                 modifier = modifier,
                 movieViewModel = movieViewModel,

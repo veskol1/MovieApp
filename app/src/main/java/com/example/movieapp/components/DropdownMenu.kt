@@ -12,7 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -34,7 +33,7 @@ fun DropdownMenu(
         .wrapContentSize()
         .padding(vertical = 16.dp)) {
         Text(text = buildAnnotatedString {
-            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                 append("Sort by ")
             }
             append(selectedFilterText)

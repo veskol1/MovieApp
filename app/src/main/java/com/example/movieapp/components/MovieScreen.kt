@@ -57,14 +57,14 @@ fun MovieScreen(
             .fillMaxWidth()) {
             Column {
                 Text(text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                         append("User Rating: ")
                     }
                     append(movieUiState.movie.rating)
                 })
 
                 Text(modifier = Modifier.padding(top = 6.dp), text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                         append("Release Date: ")
                     }
                     append(movieUiState.movie.releaseDate)

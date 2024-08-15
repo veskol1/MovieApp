@@ -2,6 +2,7 @@ package com.example.movieapp.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -13,11 +14,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ProgressIndicator(
-    modifier: Modifier = Modifier,
     size: Dp = 48.dp,
     alignment: Alignment = Alignment.BottomCenter
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().padding(30.dp)) {
         CircularProgressIndicator(
             modifier = Modifier
                 .width(size)

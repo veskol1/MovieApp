@@ -42,7 +42,7 @@ fun MainScreen(
                         itemContent = { item: Movie -> CardMovieItem(movie = item, onCardClick = {
                             navigateOnCardClick(it)
                         }) },
-                        loadingProgressIndicator = { ProgressIndicator(modifier = modifier) },
+                        loadingProgressIndicator = { ProgressIndicator() },
                         loadMore = { movieViewModel.loadMore() }
                     )
                 }
@@ -50,7 +50,7 @@ fun MainScreen(
         }
 
         Status.LOADING -> {
-            ProgressIndicator(modifier = modifier, alignment = Alignment.Center)
+            ProgressIndicator(alignment = Alignment.Center)
         }
 
         Status.ERROR -> {
@@ -67,19 +67,24 @@ fun MainScreen(
 @Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)
 fun MainScreenPreview() {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-       // DropdownMenuExample(sortFilterText = "TOP_RATED")
+        DropdownMenu(
+            selectedFilterText = "Top Rated",
+            filterOptions = FilterType.entries,
+            onFilterChange = { filterType ->
+
+            }
+        )
         Box {
             EndlessLazyVerticalGrid(
                 loading = true,
-                items = listOf(Movie(),Movie(),Movie(),Movie(),Movie(),Movie(),Movie()),
+                items = listOf(Movie(id = "91"),Movie(id ="82"),Movie(id = "83"),Movie(id ="72"),Movie(id = "73"),Movie(id ="62"),Movie(id = "63"),Movie(id ="52"),Movie(id = "53"),Movie(id ="42"),Movie(id = "43"),Movie(id ="32"),Movie(id = "33"),Movie(id ="22"),Movie(id = "23")),
                 itemKey = Movie::id,
                 itemContent = { item: Movie -> CardMovieItem(movie = item, onCardClick = {}) },
                 loadingProgressIndicator = { ProgressIndicator() },
                 loadMore = {  }
             )
-
         }
-
-
     }
+
+
 }
