@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 
 import kotlinx.coroutines.launch
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MovieViewModel @Inject constructor(
-    private val repository: MovieRepository,
+    private val remoteMoviesRepository: MovieRepository,
     private val localRepository: LocalMovieRepository
 ) : ViewModel() {
 
@@ -26,13 +27,36 @@ class MovieViewModel @Inject constructor(
     private val _movieUiState = MutableStateFlow(MovieUiState())
     var movieUiState = _movieUiState.asStateFlow()
 
+    private val _clearCache = MutableStateFlow(false)
+    var clearCache = _clearCache.asStateFlow()
+
     init {
         getRemoteMovies()
+        checkIfNeedToClearImageCache()
+    }
+
+    private fun checkIfNeedToClearImageCache() {
+        viewModelScope.launch {
+            remoteMoviesRepository.savedCacheTime.take(1).collect { savedTime ->
+                val currentTime = System.currentTimeMillis()
+                val difference = currentTime - savedTime
+                val oneDayInMillis = 24 * 60L * 60 * 1000
+
+                if (difference > 0) { //cache time is reached
+                    _clearCache.value = true
+                    remoteMoviesRepository.saveCacheTimeToDataStore(currentTime + oneDayInMillis)
+
+                } else if (savedTime == 0L) { // init cache first time
+                    remoteMoviesRepository.saveCacheTimeToDataStore(currentTime + oneDayInMillis)
+                }
+            }
+        }
+
     }
 
     private fun getRemoteMovies(resetData: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
-            val moviesList = repository.fetchMovies(filterType = uiState.value.filterType, resetData = resetData)
+            val moviesList = remoteMoviesRepository.fetchMovies(filterType = uiState.value.filterType, resetData = resetData)
 
             if (moviesList.isNotEmpty()) {
                 _uiState.update {
@@ -56,7 +80,7 @@ class MovieViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            val newMoviesList = repository.fetchMovies(
+            val newMoviesList = remoteMoviesRepository.fetchMovies(
                 filterType = uiState.value.filterType,
                 page = uiState.value.page,
             )

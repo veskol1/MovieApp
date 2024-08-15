@@ -1,6 +1,10 @@
 package com.example.movieapp.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import com.example.movieapp.api.ApiService
 import com.example.movieapp.constans.Constants.API_BASE_URL
@@ -49,8 +53,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun movieRemoteRepositoryProvide(movieApiService: ApiService): MovieRepository {
-        return MovieRepository(movieApiService)
+    fun movieRemoteRepositoryProvide(movieApiService: ApiService, dataStore: DataStore<Preferences>): MovieRepository {
+        return MovieRepository(movieApiService, dataStore)
     }
 
     @Provides
@@ -58,5 +62,12 @@ object AppModule {
     fun movieLocalRepositoryProvide(movieDao: MovieDao): LocalMovieRepository {
         return LocalMovieRepository(movieDao)
     }
+
+    @Singleton
+    @Provides
+    fun provideDataStore(@ApplicationContext appContext: Context): DataStore<Preferences> {
+        return PreferenceDataStoreFactory.create (produceFile = { appContext.preferencesDataStoreFile(name = "cache_data_time") })
+    }
+
 
 }

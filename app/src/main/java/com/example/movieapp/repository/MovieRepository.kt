@@ -1,14 +1,22 @@
 package com.example.movieapp.repository
 
+import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import com.example.movieapp.api.ApiService
 import com.example.movieapp.constans.Constants.API_KEY
 import com.example.movieapp.model.Movie
 import com.example.movieapp.viewmodel.FilterType
 import com.example.movieapp.viewmodel.FilterType.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class MovieRepository @Inject constructor(private val api: ApiService) {
+class MovieRepository @Inject constructor(private val api: ApiService, private val dataStore: DataStore<Preferences>) {
     private var moviesList: MutableList<Movie> = arrayListOf()
+    private val cacheTimeKey = longPreferencesKey("cache_image_time_key")
 
     suspend fun fetchMovies(filterType: FilterType, page: Int = 1, resetData: Boolean = false): List<Movie> {
         if (resetData) {
@@ -37,6 +45,16 @@ class MovieRepository @Inject constructor(private val api: ApiService) {
         }
 
         return emptyList()
+    }
+
+    suspend fun saveCacheTimeToDataStore(time: Long) {
+        dataStore.edit { preferences ->
+            preferences[cacheTimeKey] = time
+        }
+    }
+
+    val savedCacheTime: Flow<Long> = dataStore.data.map { preferences ->
+        preferences[cacheTimeKey] ?: 0
     }
 
 }
