@@ -21,7 +21,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -33,6 +32,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.movieapp.constans.Constants.BASE_IMAGE_URL_LIST
 import com.example.movieapp.model.Movie
@@ -48,7 +48,7 @@ fun FavoritesScreen(
     removeFavoriteClick: (movieId: String) -> Unit = {}
 
 ) {
-    val favoriteMovies by favoriteMovieViewModel.favoriteMoviesUiState.collectAsState()  //todo fix to lifecycle
+    val favoriteMovies by favoriteMovieViewModel.favoriteMoviesUiState.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
@@ -77,7 +77,7 @@ fun FavoriteItem(
     val deletedItems = remember { mutableStateListOf<Movie>() }  //used only for animation
     AnimatedVisibility(visible = !deletedItems.contains(favoriteMovie),
         enter = expandVertically(),
-        exit = shrinkVertically(animationSpec = tween(200))
+        exit = shrinkVertically(animationSpec = tween(150))
     ) {
         Card(
             modifier = Modifier
@@ -101,9 +101,9 @@ fun FavoriteItem(
                         .size(32.dp)
                         .weight(1f)
                         .clickable {
-                            scope.launch  {
+                            scope.launch {
                                 deletedItems.add(favoriteMovie)
-                                delay(200)
+                                delay(150) //this is not best practice, I assumed user can't leave screen fast enough, it's just for animation purpose :)
                                 removeFavoriteClick(favoriteMovie.id)
                             }
                         },

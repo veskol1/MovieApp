@@ -7,9 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                val clearImageCacheState by movieViewModel.clearCache.collectAsState()
+                val clearImageCacheState by movieViewModel.clearCache.collectAsStateWithLifecycle()
                 if (clearImageCacheState) {
                     imageLoader.diskCache?.clear()
                 }
