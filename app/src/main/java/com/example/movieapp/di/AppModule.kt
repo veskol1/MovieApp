@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import com.example.movieapp.api.ApiService
+import com.example.movieapp.connectivity.NetworkConnectivityManager
 import com.example.movieapp.constans.Constants.API_BASE_URL
 import com.example.movieapp.repository.LocalMovieRepository
 import com.example.movieapp.repository.MovieRepository
@@ -67,6 +68,12 @@ object AppModule {
     @Provides
     fun provideDataStore(@ApplicationContext appContext: Context): DataStore<Preferences> {
         return PreferenceDataStoreFactory.create (produceFile = { appContext.preferencesDataStoreFile(name = "cache_data_time") })
+    }
+
+    @Provides
+    @Singleton
+    fun provideConnectivity(@ApplicationContext appContext: Context): NetworkConnectivityManager {
+        return NetworkConnectivityManager(appContext)
     }
 
 

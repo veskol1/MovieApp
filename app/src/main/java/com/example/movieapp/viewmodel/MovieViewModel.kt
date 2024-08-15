@@ -2,6 +2,8 @@ package com.example.movieapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.movieapp.connectivity.ConnectivityObserver
+import com.example.movieapp.connectivity.NetworkConnectivityManager
 import com.example.movieapp.constans.Constants.TIME_TO_CLEAR_IMAGE_CACHE
 import com.example.movieapp.model.Movie
 import com.example.movieapp.repository.LocalMovieRepository
@@ -10,6 +12,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 
@@ -19,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieViewModel @Inject constructor(
     private val remoteMoviesRepository: MovieRepository,
-    private val localRepository: LocalMovieRepository
+    private val localRepository: LocalMovieRepository,
+    private val connectivityManager: NetworkConnectivityManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MoviesUiState())
@@ -34,24 +39,7 @@ class MovieViewModel @Inject constructor(
     init {
         getRemoteMovies()
         checkIfNeedToClearImageCache()
-    }
-
-    private fun checkIfNeedToClearImageCache() {
-        viewModelScope.launch {
-            remoteMoviesRepository.savedCacheTime.take(1).collect { savedTime ->
-                val currentTime = System.currentTimeMillis()
-                val difference = currentTime - savedTime
-
-                if (difference > 0) { //cache time is reached
-                    _clearCache.value = true
-                    remoteMoviesRepository.saveCacheTimeToDataStore(currentTime + TIME_TO_CLEAR_IMAGE_CACHE)
-
-                } else if (savedTime == 0L) { // init cache first time
-                    remoteMoviesRepository.saveCacheTimeToDataStore(currentTime + TIME_TO_CLEAR_IMAGE_CACHE)
-                }
-            }
-        }
-
+        handleInternetConnectionState()
     }
 
     private fun getRemoteMovies(resetData: Boolean = false) {
@@ -71,7 +59,7 @@ class MovieViewModel @Inject constructor(
         }
     }
 
-    fun loadMore() {
+    fun loadMoreMovies() {
         _uiState.update {
             it.copy(
                 page = it.page + 1,
@@ -109,19 +97,15 @@ class MovieViewModel @Inject constructor(
     }
 
     fun initMovieScreenUi(movieId: String) {
-        val movie = findMovie(movieId = movieId)
+        val foundMovie = uiState.value.moviesList.find { it.id == movieId }!!
         viewModelScope.launch(Dispatchers.IO) {
             _movieUiState.update {
                 it.copy(
-                    movie = movie,
-                    isFavorite = localRepository.checkIfMovieIsFavorite(movie)
+                    movie = foundMovie,
+                    isFavorite = localRepository.checkIfMovieIsFavorite(foundMovie)
                 )
             }
         }
-    }
-
-    private fun findMovie(movieId: String): Movie {
-        return uiState.value.moviesList.find { it.id == movieId }!!
     }
 
     fun handleFavoriteClicked() {
@@ -139,6 +123,49 @@ class MovieViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun checkIfNeedToClearImageCache() {
+        viewModelScope.launch {
+            remoteMoviesRepository.savedCacheTime.take(1).collect { savedTime ->
+                val currentTime = System.currentTimeMillis()
+                val difference = currentTime - savedTime
+
+                if (difference > 0) { //cache time is reached
+                    _clearCache.value = true
+                    remoteMoviesRepository.saveCacheTimeToDataStore(currentTime + TIME_TO_CLEAR_IMAGE_CACHE)
+
+                } else if (savedTime == 0L) { // init cache first time
+                    remoteMoviesRepository.saveCacheTimeToDataStore(currentTime + TIME_TO_CLEAR_IMAGE_CACHE)
+                }
+            }
+        }
+    }
+
+    private fun handleInternetConnectionState() {
+        connectivityManager.observe().onEach { status ->
+            when (status) {
+                ConnectivityObserver.Status.Available -> {
+                    if (uiState.value.moviesList.isEmpty()) {
+                        getRemoteMovies()
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                status = Status.SUCCESS
+                            )
+                        }
+                    }
+                }
+                ConnectivityObserver.Status.Lost -> {
+                    _uiState.update {
+                        it.copy(
+                            status = Status.NO_CONNECTION
+                        )
+                    }
+                }
+                else -> {}
+            }
+        }.launchIn(viewModelScope)
     }
 }
 
@@ -158,7 +185,8 @@ data class MovieUiState(
 enum class Status {
     LOADING,
     SUCCESS,
-    ERROR
+    ERROR,
+    NO_CONNECTION
 }
 
 enum class FilterType(val title: String) {

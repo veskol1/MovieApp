@@ -43,7 +43,7 @@ fun MainScreen(
                             navigateOnCardClick(it)
                         }) },
                         loadingProgressIndicator = { ProgressIndicator() },
-                        loadMore = { movieViewModel.loadMore() }
+                        loadMore = { movieViewModel.loadMoreMovies() }
                     )
                 }
             }
@@ -55,7 +55,13 @@ fun MainScreen(
 
         Status.ERROR -> {
             Box(modifier = modifier.fillMaxSize()) {
-                Text(text = "Error loading data", modifier = modifier.align(Alignment.Center) )
+                Text(text = "Error loading data", modifier = Modifier.align(Alignment.Center) )
+            }
+        }
+
+        Status.NO_CONNECTION -> {
+            Box(modifier = modifier.fillMaxSize()) {
+                Text(text = "No internet connection", modifier = Modifier.align(Alignment.Center) )
             }
         }
     }
