@@ -1,7 +1,10 @@
 package com.example.movieapp.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,19 +23,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.movieapp.constans.Constants.BASE_IMAGE_URL_LIST
 import com.example.movieapp.model.Movie
 import com.example.movieapp.viewmodel.FavoriteMovieViewModel
-import com.example.movieapp.viewmodel.MovieViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun FavoritesScreen(
@@ -49,12 +55,12 @@ fun FavoritesScreen(
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        LazyColumn() {
             items(items = favoriteMovies, key = { it.id }) { favoriteMovie ->
                 FavoriteItem(
                     favoriteMovie = favoriteMovie,
                     navigateOnCardClick = navigateOnCardClick,
-                    removeFavoriteClick = removeFavoriteClick
+                    removeFavoriteClick = removeFavoriteClick,
                 )
             }
         }
@@ -67,53 +73,52 @@ fun FavoriteItem(
     navigateOnCardClick: (movieId: String) -> Unit = {},
     removeFavoriteClick: (movieId: String) -> Unit = {}
 ) {
-    Card(
-        modifier = Modifier
-            .height(120.dp)
-            .fillMaxWidth()
-            .clickable {
-                navigateOnCardClick(favoriteMovie.id)
-            }
+    val scope = rememberCoroutineScope()
+    val deletedItems = remember { mutableStateListOf<Movie>() }  //used only for animation
+    AnimatedVisibility(visible = !deletedItems.contains(favoriteMovie),
+        enter = expandVertically(),
+        exit = shrinkVertically(animationSpec = tween(500))
     ) {
-        Row(modifier = Modifier.padding(0.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = favoriteMovie.title,
-                fontSize = 18.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(2f)
-            )
+        Card(
+            modifier = Modifier
+                .height(120.dp)
+                .padding(vertical = 8.dp)
+                .fillMaxWidth()
+                .clickable {
+                    navigateOnCardClick(favoriteMovie.id)
+                }
+        ) {
+            Row(modifier = Modifier.padding(0.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = favoriteMovie.title,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(2f)
+                )
 
-            Icon(
-                modifier = Modifier
-                    .size(32.dp)
-                    .weight(1f)
-                    .clickable {
-                        removeFavoriteClick(favoriteMovie.id)
-                    },
-                imageVector = Icons.Outlined.Favorite,
-                contentDescription = null,
-                tint = Color.Red,
-            )
+                Icon(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .weight(1f)
+                        .clickable {
+                            scope.launch  {
+                                deletedItems.add(favoriteMovie)
+                                delay(500)
+                                removeFavoriteClick(favoriteMovie.id)
+                            }
+                        },
+                    imageVector = Icons.Outlined.Favorite,
+                    contentDescription = null,
+                    tint = Color.Red,
+                )
 
-            AsyncImage(
-                modifier = Modifier.width(100.dp),
-                model = BASE_IMAGE_URL_LIST + favoriteMovie.image,
-                contentScale = ContentScale.Crop,
-                contentDescription = null,
-            )
+                AsyncImage(
+                    modifier = Modifier.width(100.dp),
+                    model = BASE_IMAGE_URL_LIST + favoriteMovie.image,
+                    contentScale = ContentScale.Crop,
+                    contentDescription = null,
+                )
+            }
         }
     }
-}
-
-
-@Composable
-@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)
-fun FavoritesScreenPreview() {
-    FavoriteItem(
-        favoriteMovie = Movie(
-            title = "test sdf vesko ads ada sad sad sad",
-            releaseDate = "1.1.1999",
-            rating = "6.5"
-        )
-    )
 }

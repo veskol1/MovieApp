@@ -2,6 +2,7 @@ package com.example.movieapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.movieapp.constans.Constants.TIME_TO_CLEAR_IMAGE_CACHE
 import com.example.movieapp.model.Movie
 import com.example.movieapp.repository.LocalMovieRepository
 import com.example.movieapp.repository.MovieRepository
@@ -40,14 +41,13 @@ class MovieViewModel @Inject constructor(
             remoteMoviesRepository.savedCacheTime.take(1).collect { savedTime ->
                 val currentTime = System.currentTimeMillis()
                 val difference = currentTime - savedTime
-                val oneDayInMillis = 24 * 60L * 60 * 1000
 
                 if (difference > 0) { //cache time is reached
                     _clearCache.value = true
-                    remoteMoviesRepository.saveCacheTimeToDataStore(currentTime + oneDayInMillis)
+                    remoteMoviesRepository.saveCacheTimeToDataStore(currentTime + TIME_TO_CLEAR_IMAGE_CACHE)
 
                 } else if (savedTime == 0L) { // init cache first time
-                    remoteMoviesRepository.saveCacheTimeToDataStore(currentTime + oneDayInMillis)
+                    remoteMoviesRepository.saveCacheTimeToDataStore(currentTime + TIME_TO_CLEAR_IMAGE_CACHE)
                 }
             }
         }
