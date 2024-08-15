@@ -77,7 +77,7 @@ fun FavoriteItem(
     val deletedItems = remember { mutableStateListOf<Movie>() }  //used only for animation
     AnimatedVisibility(visible = !deletedItems.contains(favoriteMovie),
         enter = expandVertically(),
-        exit = shrinkVertically(animationSpec = tween(500))
+        exit = shrinkVertically(animationSpec = tween(200))
     ) {
         Card(
             modifier = Modifier
@@ -103,7 +103,7 @@ fun FavoriteItem(
                         .clickable {
                             scope.launch  {
                                 deletedItems.add(favoriteMovie)
-                                delay(500)
+                                delay(200)
                                 removeFavoriteClick(favoriteMovie.id)
                             }
                         },
