@@ -14,8 +14,3 @@ Used clean architecture combaining MVI and MVVM.
 - #### FavoriteMovieViewModel (FavoritesScreen):
     Saving data for (Data layer) LocalMovieRepository using Room database.
 
-
-## Features I didn't implement.
-- Preview for composables (if I had more time)
-- Domain Layer - According to android documentation: "The domain layer is responsible for encapsulating complex business logic, or simple business logic that is reused by multiple ViewModels", I realy didn't found it relevant in this project (maybe I'm missing some details that is real world won't happen :) . 
-- Some UI Fixes and additions, like the dropdown(filter movie)..
