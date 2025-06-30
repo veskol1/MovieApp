@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.room)
 }
 
 android {
@@ -21,11 +20,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-    }
-
-
-    room {
-        schemaDirectory("$projectDir/schemas")
     }
 
     buildTypes {
@@ -79,23 +73,14 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.navigation.compose)
-
-
-    implementation (libs.retrofit)
-    implementation (libs.converter.gson)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(libs.hilt.android)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
     ksp(libs.hilt.compiler)
 
     implementation(libs.coil.compose)
-
-    implementation(libs.androidx.room.runtime)
-    annotationProcessor(libs.androidx.room.compiler)
-
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.datastore.preferences)
-
+    implementation(project(":data"))
+    implementation(project(":domain"))
 }
 
 

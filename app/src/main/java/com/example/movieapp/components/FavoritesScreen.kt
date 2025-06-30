@@ -34,8 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.example.data.models.Movie
 import com.example.movieapp.constans.Constants.BASE_IMAGE_URL_LIST
-import com.example.movieapp.model.Movie
 import com.example.movieapp.viewmodel.FavoriteMovieViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

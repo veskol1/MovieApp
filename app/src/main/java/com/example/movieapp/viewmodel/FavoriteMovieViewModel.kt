@@ -2,8 +2,8 @@ package com.example.movieapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.movieapp.model.Movie
-import com.example.movieapp.repository.LocalMovieRepository
+import com.example.data.models.Movie
+import com.example.data.interfaces.LocalMovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
