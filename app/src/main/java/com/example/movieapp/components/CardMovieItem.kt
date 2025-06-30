@@ -10,8 +10,9 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.data.models.Movie
 import com.example.movieapp.constans.Constants.BASE_IMAGE_URL_LIST
-import com.example.movieapp.model.Movie
+
 
 @Composable
 fun CardMovieItem(movie: Movie, onCardClick: (String) -> Unit) {

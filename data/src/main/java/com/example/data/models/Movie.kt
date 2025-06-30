@@ -1,4 +1,4 @@
-package com.example.movieapp.model
+package com.example.data.models
 
 import androidx.compose.runtime.Stable
 import androidx.room.Entity

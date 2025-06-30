@@ -1,7 +1,5 @@
-package com.example.movieapp.api
-
-
-import com.example.movieapp.model.MovieResponse
+package com.example.data.api
+import com.example.data.models.MovieResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 import retrofit2.Response

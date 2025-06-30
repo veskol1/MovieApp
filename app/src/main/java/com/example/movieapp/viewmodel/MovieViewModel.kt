@@ -2,12 +2,15 @@ package com.example.movieapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.data.models.FilterType
+import com.example.data.models.Movie
+import com.example.data.interfaces.LocalMovieRepository
+import com.example.data.interfaces.MovieRepository
+import com.example.domain.FetchMoviesUseCase
+import com.example.domain.LoadMoreMoviesUseCase
 import com.example.movieapp.connectivity.ConnectivityObserver
 import com.example.movieapp.connectivity.NetworkConnectivityManager
 import com.example.movieapp.constans.Constants.TIME_TO_CLEAR_IMAGE_CACHE
-import com.example.movieapp.model.Movie
-import com.example.movieapp.repository.LocalMovieRepository
-import com.example.movieapp.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +22,12 @@ import kotlinx.coroutines.flow.update
 
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.collections.isNotEmpty
 
 @HiltViewModel
 class MovieViewModel @Inject constructor(
+    private val loadMoreMoviesUseCase: LoadMoreMoviesUseCase,
+    private val fetchMoviesUseCase: FetchMoviesUseCase,
     private val remoteMoviesRepository: MovieRepository,
     private val localRepository: LocalMovieRepository,
     private val connectivityManager: NetworkConnectivityManager
@@ -44,7 +50,11 @@ class MovieViewModel @Inject constructor(
 
     private fun getRemoteMovies(resetData: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
-            val moviesList = remoteMoviesRepository.fetchMovies(filterType = uiState.value.filterType, resetData = resetData)
+            val moviesList = fetchMoviesUseCase(
+                filterType = uiState.value.filterType,
+                resetData = resetData,
+                page = uiState.value.page
+            )
 
             if (moviesList.isNotEmpty()) {
                 _uiState.update {
@@ -60,21 +70,19 @@ class MovieViewModel @Inject constructor(
     }
 
     fun loadMoreMovies() {
-        _uiState.update {
-            it.copy(
-                page = it.page + 1,
-                isLoadingMore = true
-            )
-        }
+        _uiState.update { it.copy(isLoadingMore = true) }
 
         viewModelScope.launch(Dispatchers.IO) {
-            val newMoviesList = remoteMoviesRepository.fetchMovies(
-                filterType = uiState.value.filterType,
-                page = uiState.value.page,
+            val pageToLoad = uiState.value.page + 1
+
+            val newMoviesList = loadMoreMoviesUseCase(
+                pageToLoad = pageToLoad,
+                filterType = uiState.value.filterType
             )
 
             _uiState.update {
                 it.copy(
+                    page = pageToLoad,
                     status = Status.SUCCESS,
                     moviesList = newMoviesList,
                     isLoadingMore = false
@@ -187,10 +195,4 @@ enum class Status {
     SUCCESS,
     ERROR,
     NO_CONNECTION
-}
-
-enum class FilterType(val title: String) {
-    UPCOMING("Upcoming"),
-    TOP_RATED("Top Rated"),
-    NOW_PLAYING("Now Playing")
 }
